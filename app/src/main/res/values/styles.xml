@@ -1,0 +1,25 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="ConversationList" parent="@style/Widget.AppCompat.ListView"></style>
+
+    <style name="Message" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/message_bubble_sent</item>
+        <item name="android:paddingBottom">@dimen/message_bubble_padding</item>
+        <item name="android:paddingLeft">@dimen/message_bubble_padding</item>
+        <item name="android:paddingRight">@dimen/message_bubble_padding</item>
+        <item name="android:paddingTop">@dimen/message_bubble_padding</item>
+    </style>
+
+</resources>
