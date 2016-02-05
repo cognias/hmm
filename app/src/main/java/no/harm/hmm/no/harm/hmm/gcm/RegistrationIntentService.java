@@ -1,4 +1,4 @@
-package no.harm.hmm;
+package no.harm.hmm.no.harm.hmm.gcm;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -12,6 +12,9 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 
 import java.io.IOException;
+
+import no.harm.hmm.R;
+import no.harm.hmm.no.harm.hmm.gcm.QuickStartPreferences;
 
 /**
  * Created by oyvinht on 23.01.16.

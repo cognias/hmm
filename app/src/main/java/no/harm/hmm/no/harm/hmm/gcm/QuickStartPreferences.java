@@ -1,4 +1,4 @@
-package no.harm.hmm;
+package no.harm.hmm.no.harm.hmm.gcm;
 
 /**
  * Created by oyvinht on 23.01.16.

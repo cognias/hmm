@@ -1,4 +1,4 @@
-package no.harm.hmm;
+package no.harm.hmm.no.harm.hmm.gcm;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -11,6 +11,9 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
+
+import no.harm.hmm.ConversationActivity;
+import no.harm.hmm.R;
 
 /**
  * Created by oyvinht on 23.01.16.
@@ -38,21 +41,7 @@ public class HmmGcmListenerService extends GcmListenerService {
         } else {
             // normal downstream message.
         }
-
-        // [START_EXCLUDE]
-        /**
-         * Production applications would usually process the message here.
-         * Eg: - Syncing with server.
-         *     - Store message in local database.
-         *     - Update UI.
-         */
-
-        /**
-         * In some cases it may be useful to show a notification indicating to the user
-         * that a message was received.
-         */
         sendNotification(message);
-        // [END_EXCLUDE]
     }
     // [END receive_message]
 

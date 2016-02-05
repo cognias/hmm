@@ -1,9 +1,11 @@
-package no.harm.hmm;
+package no.harm.hmm.no.harm.hmm.gcm;
 
 import android.content.Intent;
 import android.util.Log;
 
 import com.google.android.gms.iid.InstanceIDListenerService;
+
+import no.harm.hmm.RegistrationIntentService;
 
 /**
  * Created by oyvinht on 23.01.16.
