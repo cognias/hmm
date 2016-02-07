@@ -1,0 +1,31 @@
+(ns no.harm.hmm.core
+  
+
+(def #^{:doc "Database connection obj"} db (ref {}))
+
+(defn make-db-spec [& optional-args]
+  (let [prefs (get-prefs-obj)
+        schema (first optional-args)]
+    {:classname "org.postgresql.Driver"
+     :subprotocol "postgresql"
+     :subname "hmm"
+     :user "hmm"
+     :password "hmm"}))
+
+(cmpj/defroutes the-routes
+  (cmpj/context
+   "/" {body :body params :query-params}
+   (cmpj/POST
+    {:body
+     {:members (data/create-user
+                @db
+                {:username (params "username")
+                 :password (params "password")
+                 :gcm-id (params "gcm_id")
+                 :e-mail (params "e_mail")
+                 :phone (params "phone")})}})))
+
+(def main-handler
+  (-> the-routes))
+
+  

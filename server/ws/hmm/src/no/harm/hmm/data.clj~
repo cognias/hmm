@@ -1,0 +1,14 @@
+(ns no.harm.hmm.data
+  (:require [clojure.java.jdbc :as jdbc]))
+
+(defn create-user [db user-spec]
+  (jdbc/execute!
+   db [(str "INSERT INTO users (gcm_id, username, password, e_mail, phone)"
+            " VALUES (?, ?, ?, ?, ?);")
+       (user-spec :gcm-id)
+       (user-spec :username)
+       (user-spec :password)
+       (user-spec :e-mail)
+       (user-spec :phone)]))
+                  
+  
