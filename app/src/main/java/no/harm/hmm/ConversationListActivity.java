@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
@@ -13,18 +15,21 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
-import java.util.ArrayList;
+import no.harm.hmm.no.harm.hmm.db.HmmDbHelper;
+import no.harm.hmm.no.harm.hmm.db.ConversationListDbAdapter;
+import no.harm.hmm.no.harm.hmm.db.MessageContract;
+import no.harm.hmm.no.harm.hmm.gcm.QuickStartPreferences;
+import no.harm.hmm.no.harm.hmm.gcm.RegistrationIntentService;
 
 public class ConversationListActivity extends AppCompatActivity {
 
     private BroadcastReceiver broadcastReceiver;
-    private static final String TAG = "CLA";
     private int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     @Override
@@ -34,53 +39,54 @@ public class ConversationListActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        // Check for Google Play
+        if (checkPlayServices()) {
+            Intent intent = new Intent(this, RegistrationIntentService.class);
+            startService(intent);
+        } else {
+            Toast.makeText(ConversationListActivity.this,
+                    "Google Play is required.", Toast.LENGTH_SHORT).show();
+            System.exit(0);
+        }
+        // Set up GCM receiver to listen for messages
+        Log.i(this.getClass().toString(), "Listening for messages.");
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                Log.i(TAG, "On receiving.");
                 SharedPreferences sharedPreferences =
                         PreferenceManager.getDefaultSharedPreferences(context);
                 boolean sentToken = sharedPreferences
                         .getBoolean(QuickStartPreferences.SENT_TOKEN_TO_SERVER, false);
-                Log.i(TAG, "Sent token = " + sentToken + ".");
             }
         };
 
-        if (checkPlayServices()) {
-            Log.i(TAG, "Starting reg service.");
-            Intent intent = new Intent(this, no.harm.hmm.RegistrationIntentService.class);
-            startService(intent);
-        } else {
-            Log.i(TAG, "No google play.");
-        }
-
-        ArrayList<String> list = new ArrayList<>();
-        for (
-                int i = 0;
-                i < 20; i += 1)
-
-        {
-            list.add("Number " + i);
-        }
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                this,
-                android.R.layout.simple_list_item_1,
-                android.R.id.text1,
-                list);
+        // Set up the conversations list
+        HmmDbHelper mDbHelper = new HmmDbHelper(this);
+        Log.i(this.getClass().toString(), "Trying to read database.");
+        SQLiteDatabase rDb = mDbHelper.getReadableDatabase();
+        String[] cols = {
+                MessageContract.MessageEntry._ID,
+                MessageContract.MessageEntry.COLUMN_NAME_SENDER_ID
+        };
+        Cursor cursor = rDb.query(
+                true, // distinct
+                MessageContract.MessageEntry.TABLE_NAME,
+                cols, null, null,
+                MessageContract.MessageEntry.COLUMN_NAME_SENDER_ID, // GROUP BY
+                null, null, null);
+        ConversationListDbAdapter adapter = new ConversationListDbAdapter(this, cursor, 0);
 
         final ListView lw = (ListView) findViewById(R.id.conversationList);
         lw.setAdapter(adapter);
-        lw.setOnItemClickListener(new AdapterView.OnItemClickListener()
-                                  {
+        lw.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                       @Override
                                       public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
                                           Intent intent = new Intent(parent.getContext(), ConversationActivity.class);
                                           startActivity(intent);
                                       }
                                   }
-
         );
+
     }
 
     @Override
@@ -88,7 +94,7 @@ public class ConversationListActivity extends AppCompatActivity {
         super.onResume();
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
                 new IntentFilter(QuickStartPreferences.REGISTRATION_COMPLETE));
-        Log.i(TAG, "Resuming the app.");
+        Log.i(this.getClass().toString(), "Resuming the app.");
     }
 
     @Override
@@ -96,7 +102,6 @@ public class ConversationListActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
         super.onPause();
     }
-
 
     private boolean checkPlayServices() {
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
@@ -106,13 +111,12 @@ public class ConversationListActivity extends AppCompatActivity {
                 apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
                         .show();
             } else {
-                Log.i(TAG, "This device is not supported.");
+                Log.i(this.getClass().toString(), "This device is not supported.");
                 finish();
             }
             return false;
         }
         return true;
     }
-
 
 }

@@ -5,11 +5,6 @@ import android.util.Log;
 
 import com.google.android.gms.iid.InstanceIDListenerService;
 
-import no.harm.hmm.RegistrationIntentService;
-
-/**
- * Created by oyvinht on 23.01.16.
- */
 public class HmmInstanceIDListenerService extends InstanceIDListenerService {
     private static final String TAG = "HmmInstanceIDLS";
 

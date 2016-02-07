@@ -27,19 +27,19 @@
         </receiver>
 
         <service
-            android:name="no.harm.hmm.HmmGcmListenerService"
+            android:name=".no.harm.hmm.gcm.HmmGcmListenerService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
         </service>
-        <service android:name="no.harm.hmm.HmmInstanceIDListenerService">
+        <service android:name=".no.harm.hmm.gcm.HmmInstanceIDListenerService">
             <intent-filter>
                 <action android:name="com.google.android.gms.iid.InstanceId" />
             </intent-filter>
         </service>
         <service
-            android:name=".RegistrationIntentService"
+            android:name=".no.harm.hmm.gcm.RegistrationIntentService"
             android:exported="false">
 
         </service>
@@ -62,6 +62,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ConversationListActivity" />
         </activity>
+        <!-- ATTENTION: This was auto-generated to add Google Play services to your project for
+             App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
     </application>
 
 

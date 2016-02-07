@@ -1,22 +1,16 @@
 package no.harm.hmm;
 
-import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.List;
+import no.harm.hmm.no.harm.hmm.db.MessageContract;
+import no.harm.hmm.no.harm.hmm.db.ConversationDbAdapter;
+import no.harm.hmm.no.harm.hmm.db.HmmDbHelper;
 
 public class ConversationActivity extends AppCompatActivity {
 
@@ -26,45 +20,26 @@ public class ConversationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_conversation);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        ArrayList<String> list = new ArrayList<>();
-        for (int i = 0; i < 6; i += 1) {
-            list.add("Message " + i);
+        ActionBar supportToolbar = getSupportActionBar();
+        if (supportToolbar != null) {
+            supportToolbar.setDisplayHomeAsUpEnabled(true);
         }
-
-        BubbleListItemAdapter adapter = new BubbleListItemAdapter(this, R.layout.message_item, list);
-
+        // Fetch all messages
+        HmmDbHelper mDbHelper = new HmmDbHelper(this);
+        SQLiteDatabase rDb = mDbHelper.getReadableDatabase();
+        String[] cols = {
+                MessageContract.MessageEntry._ID,
+                MessageContract.MessageEntry.COLUMN_NAME_SENDER_ID,
+                MessageContract.MessageEntry.COLUMN_NAME_MESSAGE,
+                MessageContract.MessageEntry.COLUMN_NAME_LOCAL_TIMESTAMP
+        };
+        Cursor cursor = rDb.query(MessageContract.MessageEntry.TABLE_NAME,
+                cols, null, null, null, null,
+                MessageContract.MessageEntry.COLUMN_NAME_LOCAL_TIMESTAMP + " ASC ", // ORDER BY
+                null);
+        ConversationDbAdapter adapter = new ConversationDbAdapter(this, cursor, 0);
         final ListView lw = (ListView) findViewById(R.id.conversation);
         lw.setAdapter(adapter);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
-
-    private class BubbleListItemAdapter extends ArrayAdapter<String> {
-
-        private int resource;
-
-        public BubbleListItemAdapter(Context ctx, int resource, List<String> items) {
-            super(ctx, resource, items);
-            this.resource = resource;
-        }
-
-        @Override
-        public View getView(int pos, View convertView, ViewGroup parent) {
-            LinearLayout bubbleView;
-            String item = getItem(pos);
-            if (convertView == null) {
-                bubbleView = new LinearLayout(getContext());
-                LayoutInflater vi = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                vi.inflate(resource, bubbleView, true);
-            } else {
-                bubbleView = (LinearLayout)convertView;
-            }
-            TextView tv = (TextView)bubbleView.findViewById(R.id.message);
-            tv.setText(item);
-            return bubbleView;
-        }
-
-    }
-
 }
